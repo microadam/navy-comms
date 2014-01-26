@@ -1,7 +1,14 @@
 {
   "name": "navy-comms",
-  "description": "admiral",
+  "description": "A CLI used to issue orders to your fleet of Captains via the central Admiral.",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:microadam/navy-comms"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org"
+  },
   "bin": {
     "comms": "./comms.js"
   },
