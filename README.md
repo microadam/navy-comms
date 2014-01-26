@@ -16,6 +16,6 @@ Currently you can not create any applications or store any configuration data, h
 
     comms issue testApp test 1 2 3
 
-'testApp' is an application identifier
-'test' is the name of the order you wish to execute
-'1 2 3' are example arguments that will be used when executing the order
+* 'testApp' is an application identifier
+* 'test' is the name of the order you wish to execute
+* '1 2 3' are example arguments that will be used when executing the order
