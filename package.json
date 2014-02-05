@@ -26,7 +26,14 @@
     "primus-emitter": "~2.0.5",
     "primus-responder": "~1.0.1",
     "ws": "~0.4.31",
-    "chalk": "~0.4.0"
+    "chalk": "~0.4.0",
+    "levelup": "~0.18.2",
+    "leveldown": "~0.10.2",
+    "service-locator": "0.0.2",
+    "async": "~0.2.10",
+    "cli-table": "~0.3.0",
+    "columnify": "~0.1.2",
+    "prettyjson": "~0.11.1"
   },
   "devDependencies": {
     "jshint": "~2.4.1",

@@ -1,8 +1,19 @@
 #!/usr/bin/env node
-var app = require('commander')
-  , _ = require('lodash')
+var serviceLocator = require('service-locator').createServiceLocator()
+  , app = require('commander')
+  , levelup = require('levelup')
+  , fs = require('fs')
   , socketClient = require('./lib/socket-client')()
   , requestSender = require('./lib/request-sender')()
+  , db = levelup(process.env.HOME + '/.navy-comms-config')
+
+serviceLocator.register('db', db)
+
+var configManager = require('./lib/config-manager')(serviceLocator)
+
+serviceLocator.register('config', configManager)
+serviceLocator.register('socketClient', socketClient)
+serviceLocator.register('requestSender', requestSender)
 
 app.unknownOption = function (arg) {
   console.log('')
@@ -13,78 +24,22 @@ app.unknownOption = function (arg) {
 
 app
   .version('0.0.1')
-  .option('-a, --admiral [http://127.0.0.1:8006]', 'Admiral host to connect to [http://127.0.0.1:8006]')
+  .option('-a, --admiral [http://127.0.0.1:8006]', 'admiral host to connect to')
 
-app
-  .command('history')
-  .description('View a history of issued Orders')
-  .action(function () {
-    console.log('viewing history...')
+fs.readdir('./commands/', function (error, files) {
+
+  // process once so loaded commands have access to options
+  app.parse(process.argv)
+
+  files.forEach(function (file) {
+    require('./commands/' + file)(serviceLocator, app)
   })
 
-app
-  .command('issue')
-  .description('Issue an order to your Captains')
-  .action(function (appId, order) {
-    if (typeof order === 'object') {
-      order = null
-    }
-    var orderArgs = _.toArray(arguments)
-    orderArgs.splice(0, 2)
-    orderArgs.splice(orderArgs.length - 1, 1)
-    socketClient.connect(app.admiral, function (error, client, clientId) {
-      if (error) {
-        console.log('Unable to connect to Admiral...')
-        return
-      } else if (!order) {
-        console.log('listing all captains application orders...')
-        socketClient.sendListOrdersRequest(appId, client, clientId, function (response) {
-          if (response.success) {
-            response.orders.forEach(function (order) {
-              console.log(order)
-            })
-          } else {
-            console.log(response.message)
-          }
-          client.end()
-        })
-      } else  {
-        console.log('issuing order "' + order + '" for application "' + appId + '" with args: ' + orderArgs)
-        requestSender.sendExecuteOrderRequest(order, appId, orderArgs, client, clientId, function (response) {
-          if (response.success) {
-            console.log('order complete!')
-          } else {
-            console.log(response.message)
-          }
-          client.end()
-        })
-      }
-    })
-  })
+  // process again so that our null argument check works
+  app.parse(process.argv)
 
-app
-  .command('list')
-  .description('List available Applications')
-  .action(function () {
-    console.log('listing...')
-  })
+  if (typeof app.args[app.args.length - 1] !== 'object') {
+    app.help()
+  }
 
-app
-  .command('login')
-  .description('Authenticate with The Admiral')
-  .action(function () {
-    console.log('authenticating...')
-  })
-
-app
-  .command('manage')
-  .description('Manage your Applications')
-  .action(function () {
-    console.log('managing...')
-  })
-
-app.parse(process.argv)
-
-if (typeof app.args[app.args.length - 1] !== 'object') {
-  app.help()
-}
+})
