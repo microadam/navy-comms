@@ -1,4 +1,5 @@
 var Table = require('cli-table')
+  , captureData = require('../util/capture-data')
   , showUsage = require('../util/usage')
   , prettyjson = require('prettyjson')
 
@@ -16,13 +17,13 @@ module.exports = function (serviceLocator, app) {
         listApplications()
         break;
       case 'add':
-        console.log('adding...')
+        newApplication()
         break;
       case 'view':
         viewApplication(appId)
         break;
       case 'edit':
-        console.log('editing...')
+        editApplication(appId)
         break;
       case 'delete':
         console.log('deleting...')
@@ -47,10 +48,25 @@ module.exports = function (serviceLocator, app) {
     console.log(table.toString())
   }
 
+  function newApplication() {
+    var defaultConfig =
+      { name: '<application name here>'
+      , appId: '<appId here>'
+      }
+    captureData(null, defaultConfig, 'new', function (error, data) {
+      if (error) {
+        throw error
+      } else {
+        console.log(data)
+      }
+    })
+  }
+
   function viewApplication(appId) {
     if (!appId) {
       return displayUsage()
     }
+
     var data =
     { 'name': 'Test Application'
     , 'appId': 'testapp'
@@ -65,6 +81,26 @@ module.exports = function (serviceLocator, app) {
     console.log('')
     console.log('   ', prettyjson.render(data).replace(/\n/g, '\n    '))
     console.log('')
+  }
+
+  function editApplication(appId) {
+
+    var currentData =
+    { 'name': 'Test Application'
+    , 'appId': 'testapp'
+    , 'environments':
+      { 'staging': { 'url': 'http://staging.testapp.com' }
+      , 'production': { 'url': 'http://testapp.com' }
+      }
+    }
+
+    captureData(appId, currentData, 'edit', function (error, data) {
+      if (error) {
+        throw error
+      } else {
+        console.log(data)
+      }
+    })
   }
 
   function displayUsage() {
