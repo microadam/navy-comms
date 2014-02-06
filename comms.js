@@ -23,7 +23,7 @@ app.unknownOption = function (arg) {
 }
 
 app
-  .version('0.0.1')
+  .version(require('./package.json').version)
   .option('-a, --admiral [http://127.0.0.1:8006]', 'admiral host to connect to')
 
 fs.readdir('./commands/', function (error, files) {
