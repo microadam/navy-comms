@@ -1,6 +1,7 @@
-var requestSender = require('../../lib/request-sender')()
+var should = require('should')
+  , requestSender = require('../../lib/request-sender')()
   , client =
-      { writeAndWait: function (data, callback) {
+      { send: function (event, data, callback) {
           callback(data)
         }
       }
@@ -12,9 +13,7 @@ describe('request-sender', function () {
     it('should send correct data', function (done) {
 
       requestSender.sendRegisterRequest(client, function (data) {
-        Object.keys(data).length.should.equal(2)
-        data.request.should.equal('register')
-        data.type.should.equal('client')
+        should.not.exist(data)
         done()
       })
 
@@ -29,11 +28,9 @@ describe('request-sender', function () {
         , clientId = 1234
 
       requestSender.sendListOrdersRequest(appId, client, clientId, function (data) {
-        Object.keys(data).length.should.equal(4)
-        data.request.should.equal('orderList')
+        Object.keys(data).length.should.equal(2)
         data.appId.should.equal('appIdOne')
         data.clientId.should.equal(1234)
-        data.type.should.equal('client')
         done()
       })
 
@@ -50,12 +47,10 @@ describe('request-sender', function () {
         , clientId = 1234
 
       requestSender.sendExecuteOrderRequest(order, appId, orderArgs, client, clientId, function (data) {
-        Object.keys(data).length.should.equal(6)
-        data.request.should.equal('executeOrder')
+        Object.keys(data).length.should.equal(4)
         data.appId.should.equal('appIdOne')
         data.orderArgs.should.equal('args')
         data.clientId.should.equal(1234)
-        data.type.should.equal('client')
         done()
       })
 

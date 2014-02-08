@@ -24,7 +24,6 @@
     "commander": "~2.1.0",
     "lodash": "~2.4.1",
     "primus-emitter": "~2.0.5",
-    "primus-responder": "~1.0.1",
     "ws": "~0.4.31",
     "chalk": "~0.4.0",
     "levelup": "~0.18.2",
