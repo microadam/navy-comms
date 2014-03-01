@@ -4,13 +4,13 @@ var should = require('should')
 describe('bootstrap', function () {
 
   it('should load all required modules', function () {
-      bootstrap(function (serviceLocator) {
-        should.exist(serviceLocator.db)
-        should.exist(serviceLocator.app)
-        should.exist(serviceLocator.config)
-        should.exist(serviceLocator.connectToAdmiral)
-        should.exist(serviceLocator.socketClient)
-      })
+    bootstrap(function (serviceLocator) {
+      should.exist(serviceLocator.db)
+      should.exist(serviceLocator.app)
+      should.exist(serviceLocator.config)
+      should.exist(serviceLocator.connectToAdmiral)
+      should.exist(serviceLocator.socketClient)
     })
+  })
 
 })
