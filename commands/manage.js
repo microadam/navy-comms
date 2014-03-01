@@ -1,109 +1,153 @@
 var Table = require('cli-table')
+  , prettyjson = require('prettyjson')
+  , async = require('async')
+  , inquirer = require('inquirer')
   , captureData = require('../util/capture-data')
   , showUsage = require('../util/usage')
-  , prettyjson = require('prettyjson')
 
-module.exports = function (serviceLocator, app) {
+module.exports = function (serviceLocator) {
 
-  app
+  serviceLocator.app
     .command('manage')
     .description('manage applications')
     .action(function (subcommand, appId) {
       /* jshint maxcomplexity: 7 */
       if (typeof appId === 'object') appId = null
 
-      switch (subcommand) {
-      case 'list':
-        listApplications()
-        break;
-      case 'add':
-        newApplication()
-        break;
-      case 'view':
-        viewApplication(appId)
-        break;
-      case 'edit':
-        editApplication(appId)
-        break;
-      case 'delete':
-        console.log('deleting...')
-        break;
-      default:
-        displayUsage()
-      }
+      serviceLocator.connectToAdmiral(serviceLocator.app.admiral, function (client) {
+        switch (subcommand) {
+        case 'list':
+          listApplications(client)
+          break;
+        case 'add':
+          newApplication(client)
+          break;
+        case 'view':
+          viewApplication(appId, client)
+          break;
+        case 'edit':
+          editApplication(appId, client)
+          break;
+        case 'delete':
+          deleteApplication(appId, client)
+          break;
+        default:
+          displayUsage(client)
+        }
+      })
+
     })
 
-  function listApplications() {
-    var table = new Table(
-      { head: [ 'Name', 'AppId', 'Added By', 'Date Created' ]
-      }
-    )
+  function listApplications(client) {
+    client.send('applicationList', null, function (applications) {
+      var table = new Table(
+        { head: [ 'Name', 'AppId', 'Added By', 'Date Created' ]
+        }
+      )
 
-    table.push
-    ( [ 'Test Application', 'testapp', 'Fred Blogs', '01 Jan 2014' ]
-    , [ 'Hiss Bang Whallop', 'hissbang', 'John Smith', '14 Nov 2013' ]
-    , [ 'Foo Bar Baz', 'foobarbaz', 'Dave Davidson', '22 Sep 2014' ]
-    )
+      applications.forEach(function (item) {
+        table.push([ item.config.name, item.config.appId, item.createdBy, item.createdDate ])
+      })
 
-    console.log(table.toString())
+      console.log(table.toString())
+      client.end()
+    })
   }
 
-  function newApplication() {
+  function newApplication(client) {
     var defaultConfig =
       { name: '<application name here>'
       , appId: '<appId here>'
       }
-    captureData(null, defaultConfig, 'new', function (error, data) {
-      if (error) {
-        throw error
-      } else {
-        console.log(data)
+
+    async.waterfall
+    ( [ function (waterCallback) {
+          captureData(null, defaultConfig, 'new', waterCallback)
+        }
+      , function (data, waterCallback) {
+          client.send('applicationCreate', data, function (response) {
+            waterCallback(null, response)
+          })
+        }
+      ]
+    , function (error) {
+        if (error) {
+          throw error
+        }
+        console.log('Application Added')
+        client.end()
       }
-    })
+    )
   }
 
-  function viewApplication(appId) {
+  function viewApplication(appId, client) {
     if (!appId) {
-      return displayUsage()
+      return displayUsage(client)
     }
 
-    var data =
-    { 'name': 'Test Application'
-    , 'appId': 'testapp'
-    , 'environments':
-      { 'staging': { 'url': 'http://staging.testapp.com' }
-      , 'production': { 'url': 'http://testapp.com' }
-      }
-    }
+    var data = { appId: appId }
 
-    console.log('')
-    console.log('  Current config for: ' + appId)
-    console.log('')
-    console.log('   ', prettyjson.render(data).replace(/\n/g, '\n    '))
-    console.log('')
+    client.send('applicationGet', data, function (response) {
+      console.log('')
+      console.log('  Current config for: ' + appId)
+      console.log('')
+      console.log('   ', prettyjson.render(response).replace(/\n/g, '\n    '))
+      console.log('')
+      client.end()
+    })
+
   }
 
-  function editApplication(appId) {
-
-    var currentData =
-    { 'name': 'Test Application'
-    , 'appId': 'testapp'
-    , 'environments':
-      { 'staging': { 'url': 'http://staging.testapp.com' }
-      , 'production': { 'url': 'http://testapp.com' }
-      }
+  function editApplication(appId, client) {
+    if (!appId) {
+      return displayUsage(client)
     }
 
-    captureData(appId, currentData, 'edit', function (error, data) {
-      if (error) {
-        throw error
+    async.waterfall
+    ( [ function (waterCallback) {
+          var data = { appId: appId }
+          client.send('applicationGet', data, function (response) {
+            waterCallback(null, response)
+          })
+        }
+      , function (data, waterCallback) {
+          captureData(appId, data.config, 'edit', waterCallback)
+        }
+      , function (data, waterCallback) {
+          client.send('applicationEdit', data, function () {
+            waterCallback(null)
+          })
+        }
+      ]
+    , function (error) {
+        if (error) {
+          throw error
+        }
+        console.log('Application Edited')
+        client.end()
+      }
+    )
+  }
+
+  function deleteApplication(appId, client) {
+    if (!appId) {
+      return displayUsage(client)
+    }
+    var question =  'Are you sure you wish to delete ' + appId + '?'
+      , data = { type: 'confirm', name: 'doDelete', message: question, default: false }
+    inquirer.prompt(data, function (answer) {
+      if (answer.doDelete) {
+        client.send('applicationDelete', { appId: appId }, function () {
+          console.log(111, arguments)
+          client.end()
+        })
       } else {
-        console.log(data)
+        client.end()
       }
     })
   }
 
-  function displayUsage() {
+  function displayUsage(client) {
     var usage =
     [ [ 'list', 'list all applications' ]
     , [ 'add', 'add a new application' ]
@@ -112,6 +156,7 @@ module.exports = function (serviceLocator, app) {
     , [ 'delete <appId>', 'delete an existing application' ]
     ]
     showUsage('manage', usage)
+    client.end()
   }
 
 }

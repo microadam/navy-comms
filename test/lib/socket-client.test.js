@@ -9,6 +9,9 @@ function Socket() {
 }
 
 Socket.prototype = Object.create(EventEmitter.prototype)
+Socket.prototype.send = function (event, data, callback) {
+  callback({ clientId: 1 })
+}
 
 describe('socket-client', function () {
 
@@ -16,22 +19,15 @@ describe('socket-client', function () {
 
     var socketStub = null
       , handleEvents = null
-      , requestSender = null
       , socketClient = null
 
     beforeEach(function () {
       socketStub = sinon.stub()
       socketStub.returns(new Socket())
       handleEvents = sinon.spy()
-      requestSender =
-      { sendRegisterRequest: function (client, callback) {
-          callback({})
-        }
-      }
       /* jshint camelcase: false */
       createSocketClient.__set__
       ( { Socket: socketStub
-        , requestSender: requestSender
         , handleEvents: handleEvents
         }
       )

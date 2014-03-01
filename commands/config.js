@@ -1,8 +1,8 @@
 var showUsage = require('../util/usage')
 
-module.exports = function (serviceLocator, app) {
+module.exports = function (serviceLocator) {
 
-  app
+  serviceLocator.app
     .command('config')
     .description('change the comms default configuration')
     .action(function (subcommand, key, value) {

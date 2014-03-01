@@ -20,10 +20,10 @@
     "posttest": "./node_modules/.bin/istanbul check-coverage && rm -rf coverage"
   },
   "dependencies": {
-    "primus": "~1.5.2",
+    "primus": "~2.0",
     "commander": "~2.1.0",
     "lodash": "~2.4.1",
-    "primus-emitter": "~2.0.5",
+    "primus-emitter": "~3.0",
     "ws": "~0.4.31",
     "chalk": "~0.4.0",
     "levelup": "~0.18.2",
@@ -33,7 +33,8 @@
     "cli-table": "~0.3.0",
     "columnify": "~0.1.2",
     "prettyjson": "~0.11.1",
-    "format-json": "~1.0.3"
+    "format-json": "~1.0.3",
+    "inquirer": "~0.4.1"
   },
   "devDependencies": {
     "jshint": "~2.4.1",
