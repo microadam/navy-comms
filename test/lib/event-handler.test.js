@@ -27,16 +27,14 @@ describe('event-handler', function () {
       var client = new Client()
       handleEvents(client)
       client.emit('serverMessage', { message: 'hello' })
-      var output = '\u001b[1m\u001b[32mAdmiral: \u001b[39m\u001b[22m\u001b[36mhello\u001b[39m'
-      logSpy.calledWith(output).should.equal(true)
+      logSpy.calledOnce.should.equal(true)
     })
 
     it('should listen to the captainMessage event', function () {
       var client = new Client()
       handleEvents(client)
       client.emit('captainMessage', { captainName: 'test', message: 'hello' })
-      var output = '\u001b[1m\u001b[34mtest: \u001b[39m\u001b[22m\u001b[36mhello\u001b[39m'
-      logSpy.calledWith(output).should.equal(true)
+      logSpy.calledOnce.should.equal(true)
     })
 
   })
