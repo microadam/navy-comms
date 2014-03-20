@@ -1,5 +1,7 @@
 # navy-comms
 
+![build status](http://ci.microadam.co.uk/microadam/navy-comms/badge)
+
 A CLI used to issue orders to your fleet of [Captains](http://github.com/microadam/navy-captain) via the central [Admiral](http://github.com/microadam/navy-admiral).
 
 ## Installation
