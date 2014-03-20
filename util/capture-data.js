@@ -26,7 +26,7 @@ module.exports = function captureData(appId, currentData, type, callback) {
 }
 
 function getData(fileName, currentData, comment, callback) {
-  var editorPath = 'vim' //process.env.EDITOR || 'vim'
+  var editorPath = process.env.EDITOR || 'vim'
   async.waterfall
   ( [ function (waterCallback) {
         var data = comment + '\n\n' + currentData
