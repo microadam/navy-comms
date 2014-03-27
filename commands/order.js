@@ -6,27 +6,28 @@ module.exports = function (serviceLocator) {
   serviceLocator.app
     .command('order')
     .description('issue an order to your Captains')
-    .action(function (appId, order) {
+    .action(function (appId, environment, order) {
       if (typeof appId === 'object') appId = null
+      if (typeof environment === 'object') environment = null
       if (typeof order === 'object') order = null
       var orderArgs = _.toArray(arguments)
-      orderArgs.splice(0, 2)
+      orderArgs.splice(0, 3)
       orderArgs.splice(orderArgs.length - 1, 1)
 
       serviceLocator.connectToAdmiral(serviceLocator.app.admiral, function (client, clientId) {
-        if (!appId) {
+        if (!appId || !environment) {
           displayUsage(client)
         } else if (!order) {
-          listOrders(appId, client, clientId)
+          listOrders(appId, environment, client, clientId)
         } else {
-          issueOrder(appId, order, orderArgs, client, clientId)
+          issueOrder(appId, environment, order, orderArgs, client, clientId)
         }
       })
     })
 
-  function listOrders(appId, client, clientId) {
+  function listOrders(appId, environment, client, clientId) {
     console.log('listing all captains application orders...')
-    var data = { appId: appId, clientId: clientId }
+    var data = { appId: appId, environment: environment, clientId: clientId }
     client.send('orderList', data, function (response) {
       if (response.success) {
         response.orders.forEach(function (order) {
@@ -39,10 +40,15 @@ module.exports = function (serviceLocator) {
     })
   }
 
-  function issueOrder(appId, order, orderArgs, client, clientId) {
-    console.log('issuing order "' + order + '" for application "' + appId + '" with args: ' + orderArgs)
+  function issueOrder(appId, environment, order, orderArgs, client, clientId) {
+    var msg =
+      [ 'issuing order "' + order + '" for application "' + appId
+      , '" on environment "' + environment + '" with args: ' + orderArgs
+      ]
+    console.log(msg.join(''))
     var data =
       { appId: appId
+      , environment: environment
       , order: order
       , orderArgs: orderArgs
       , clientId: clientId
@@ -59,8 +65,12 @@ module.exports = function (serviceLocator) {
 
   function displayUsage(client) {
     var usage =
-    [ [ '<appId>', 'list all orders that this application can execute' ]
-    , [ '<appId> <order>', 'issue the given order to all of this applications Captains' ]
+    [ [ '<appId> <environment>'
+      , 'list all orders that this application can execute on the given environment'
+      ]
+    , [ '<appId> <environment> <order>'
+      , 'issue the given order to all of this applications Captains on the given environment'
+      ]
     ]
     showUsage('order', usage)
     client.end()
