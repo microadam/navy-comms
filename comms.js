@@ -14,7 +14,7 @@ bootstrap(function (serviceLocator) {
     .version(require('./package.json').version)
     .option('-a, --admiral [http://127.0.0.1:8006]', 'admiral host to connect to')
 
-  fs.readdir('./commands/', function (error, files) {
+  fs.readdir(__dirname + '/commands/', function (error, files) {
 
     // process once so loaded commands have access to options
     serviceLocator.app.parse(process.argv)
