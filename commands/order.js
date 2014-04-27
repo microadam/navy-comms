@@ -55,7 +55,7 @@ module.exports = function (serviceLocator) {
       }
     client.send('executeOrder', data, function (response) {
       if (response.success) {
-        console.log('order complete!')
+        console.log('order complete')
       } else {
         console.log(response.message)
       }
