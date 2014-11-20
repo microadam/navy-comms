@@ -58,7 +58,7 @@ describe('socket-client', function () {
 
     it('should use default admiral connection details if none provided', function () {
       socketClient.connect(false)
-      socketStub.calledWith('http://127.0.0.1:8006').should.equal(true)
+      socketStub.calledWith('http://none:none@127.0.0.1:8006').should.equal(true)
     })
 
     it('should use provided admiral connection details', function () {
