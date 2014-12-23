@@ -46,20 +46,30 @@ module.exports = function (serviceLocator) {
       , '" on environment "' + environment + '" with args: ' + orderArgs
       ]
     console.log(msg.join(''))
-    var data =
-      { appId: appId
-      , environment: environment
-      , order: order
-      , orderArgs: orderArgs
-      , clientId: clientId
+
+    serviceLocator.config.get('username', function (username) {
+      if (!username) {
+        // TODO: Should really be server side validated
+        console.log('ERROR: Username must be set before issuing orders')
+        console.log('Set using "comms config set username <username>"')
+        client.end()
       }
-    client.send('executeOrder', data, function (response) {
-      if (response.success) {
-        console.log('order complete')
-      } else {
-        console.log(response.message)
-      }
-      client.end()
+      var data =
+        { appId: appId
+        , environment: environment
+        , order: order
+        , orderArgs: orderArgs
+        , clientId: clientId
+        , username: username
+        }
+      client.send('executeOrder', data, function (response) {
+        if (response.success) {
+          console.log('order complete')
+        } else {
+          console.log(response.message)
+        }
+        client.end()
+      })
     })
   }
 
