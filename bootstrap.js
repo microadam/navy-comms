@@ -1,4 +1,5 @@
 var serviceLocator = require('service-locator').createServiceLocator()
+  , notifier = require('node-notifier')
   , app = require('commander')
   , levelup = require('levelup')
   , socketClient = require('./lib/socket-client')()
@@ -11,6 +12,7 @@ serviceLocator.register('app', app)
 serviceLocator.register('config', configManager)
 serviceLocator.register('connectToAdmiral', admiralConnector)
 serviceLocator.register('socketClient', socketClient)
+serviceLocator.register('notifier', notifier)
 
 module.exports = function bootstrap(callback) {
   callback(serviceLocator)

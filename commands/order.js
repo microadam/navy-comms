@@ -68,6 +68,7 @@ module.exports = function (serviceLocator) {
         } else {
           console.log(response.message)
         }
+        serviceLocator.notifier.notify({ title: 'Navy Comms', message: order + ' completed' })
         client.end()
       })
     })
