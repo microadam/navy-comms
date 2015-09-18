@@ -138,7 +138,6 @@ module.exports = function (serviceLocator) {
     inquirer.prompt(data, function (answer) {
       if (answer.doDelete) {
         client.send('applicationDelete', { appId: appId }, function () {
-          console.log(111, arguments)
           client.end()
         })
       } else {
