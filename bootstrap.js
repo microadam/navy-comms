@@ -1,4 +1,4 @@
-var serviceLocator = require('service-locator').createServiceLocator()
+var serviceLocator = require('service-locator')()
   , notifier = require('node-notifier')
   , app = require('commander')
   , levelup = require('levelup')
