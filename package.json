@@ -13,39 +13,39 @@
     "comms": "./comms.js"
   },
   "scripts": {
-    "lint": "./node_modules/.bin/jshint . --reporter=./node_modules/jshint-full-path/index.js",
-    "jscs": "./node_modules/.bin/jscs .",
+    "lint": "jshint . --reporter=./node_modules/jshint-full-path/index.js",
+    "jscs": "jscs -r unix .",
     "pretest": "npm run-script lint && npm run-script jscs",
-    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive -R spec -r should",
-    "posttest": "./node_modules/.bin/istanbul check-coverage && rm -rf coverage"
+    "test": "istanbul cover ./node_modules/.bin/_mocha -- --recursive -R spec -r should",
+    "posttest": "istanbul check-coverage && rm -rf coverage"
   },
   "dependencies": {
-    "async": "~0.2.10",
-    "chalk": "~0.4.0",
-    "cli-table": "~0.3.0",
-    "columnify": "~0.1.2",
-    "commander": "~2.1.0",
-    "format-json": "~1.0.3",
-    "inquirer": "~0.4.1",
-    "leveldown": "~0.10.2",
-    "levelup": "~0.18.2",
-    "lodash": "~2.4.1",
-    "moment": "^2.6.0",
-    "node-notifier": "^4.2.3",
-    "prettyjson": "~0.11.1",
-    "primus": "~2.3",
-    "primus-emitter": "~3.0",
-    "service-locator": "0.0.2",
-    "ws": "~0.4.31"
+    "async": "^1.5.1",
+    "chalk": "^1.1.1",
+    "cli-table": "^0.3.1",
+    "columnify": "^1.5.4",
+    "commander": "^2.9.0",
+    "format-json": "^1.0.3",
+    "inquirer": "^0.11.1",
+    "leveldown": "^1.4.3",
+    "levelup": "^1.3.1",
+    "lodash": "^3.10.1",
+    "moment": "^2.11.0",
+    "node-notifier": "^4.4.0",
+    "prettyjson": "^1.1.3",
+    "primus": "^4.0.4",
+    "primus-emitter": "^3.1.1",
+    "service-locator": "^1.0.0",
+    "ws": "^1.0.1"
   },
   "devDependencies": {
-    "jshint": "~2.4.1",
-    "jshint-full-path": "~1.1.1",
-    "mocha": "~1.17.0",
-    "should": "~3.0.1",
-    "istanbul": "~0.2.3",
-    "sinon": "~1.7.3",
-    "jscs": "~1.3",
-    "rewire": "~2.0.0"
+    "istanbul": "^0.4.1",
+    "jscs": "^2.8.0",
+    "jshint": "^2.9.1-rc2",
+    "jshint-full-path": "^1.1.1",
+    "mocha": "^2.3.4",
+    "rewire": "^2.5.1",
+    "should": "^8.0.2",
+    "sinon": "^1.17.2"
   }
 }
