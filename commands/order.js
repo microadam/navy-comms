@@ -5,12 +5,15 @@ module.exports = function (serviceLocator) {
 
   serviceLocator.app
     .command('order')
+    .option('-d, --delay [0]', 'delay to apply between any order steps that are run in series')
     .description('issue an order to your Captains')
     .action(function (appId, environment, order) {
+      var orderArgs = _.toArray(arguments)
+        , options = orderArgs[ orderArgs.length - 1 ]
+
       if (typeof appId === 'object') appId = null
       if (typeof environment === 'object') environment = null
       if (typeof order === 'object') order = null
-      var orderArgs = _.toArray(arguments)
       orderArgs.splice(0, 3)
       orderArgs.splice(orderArgs.length - 1, 1)
 
@@ -20,7 +23,7 @@ module.exports = function (serviceLocator) {
         } else if (!order) {
           listOrders(appId, environment, client, clientId)
         } else {
-          issueOrder(appId, environment, order, orderArgs, client, clientId)
+          issueOrder(appId, environment, order, orderArgs, client, clientId, { delay: options.delay })
         }
       })
     })
@@ -40,7 +43,7 @@ module.exports = function (serviceLocator) {
     })
   }
 
-  function issueOrder(appId, environment, order, orderArgs, client, clientId) {
+  function issueOrder(appId, environment, order, orderArgs, client, clientId, options) {
     var msg =
       [ 'issuing order "' + order + '" for application "' + appId
       , '" on environment "' + environment + '" with args: ' + orderArgs
@@ -60,6 +63,7 @@ module.exports = function (serviceLocator) {
         , order: order
         , orderArgs: orderArgs
         , clientId: clientId
+        , options: options
         , username: username
         }
       client.send('executeOrder', data, function (response) {
